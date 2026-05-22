@@ -1,0 +1,59 @@
+.project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+/* INPUT FIELDS */
+.project-form input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  outline: none;
+  font-size: 14px;
+  transition: 0.2s ease;
+  background: #fff;
+}
+
+.project-form input:focus {
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* PLACEHOLDER STYLE */
+.project-form input::placeholder {
+  color: #9ca3af;
+}
+
+/* BUTTON */
+.project-form button {
+  padding: 12px 14px;
+  border: none;
+  border-radius: 10px;
+  background: var(--primary-color);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.project-form button:hover {
+  background: var(--secondary-color);
+}
+
+/* DISABLED STATE */
+.project-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* RESPONSIVE (optional but real-world ready) */
+@media (max-width: 480px) {
+  .project-form input,
+  .project-form button {
+    font-size: 13px;
+    padding: 10px 12px;
+  }
+}

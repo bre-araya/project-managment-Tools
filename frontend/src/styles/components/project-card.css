@@ -1,0 +1,33 @@
+.project-card {
+  background: white;
+  padding: 20px;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-color);
+  transition: var(--transition);
+}
+
+.project-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.project-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.project-header h3 {
+  font-size: 16px;
+}
+
+.project-header span {
+  font-weight: bold;
+  color: var(--primary-color);
+}
+
+.project-card p {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 12px;
+}

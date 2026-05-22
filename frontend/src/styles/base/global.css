@@ -1,0 +1,25 @@
+/* Purpose:
+app-wide colors
+typography
+reusable variables
+body styling
+ */ 
+
+:root {
+  --primary-color: #4f46e5;
+  --secondary-color: #6366f1;
+  --background-color: #f5f7fb;
+  --text-color: #1f2937;
+  --white-color: #ffffff;
+  --border-color: #e5e7eb;
+
+  --transition: 0.3s ease;
+  --border-radius: 12px;
+
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: var(--background-color);
+  color: var(--text-color);
+}
