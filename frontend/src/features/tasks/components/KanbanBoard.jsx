@@ -1,60 +1,43 @@
-import {
-  DragDropContext,
-  Droppable,
-} from "@hello-pangea/dnd";
+import { Droppable } from "@hello-pangea/dnd";
 
 import TaskColumn from "./TaskColumn";
 
-function KanbanBoard({ tasks, onDragEnd }) {
+function KanbanBoard({ tasks }) {
   return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <div className="kanban-board">
-        <Droppable droppableId="todo">
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              <TaskColumn
-                title="To Do"
-                tasks={tasks.todo}
-              />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+    <div className="kanban-board">
+      <Droppable droppableId="todo">
+        {(provided, snapshot) => (
+          <TaskColumn
+            title="To Do"
+            tasks={tasks.todo}
+            provided={provided}
+            snapshot={snapshot}
+          />
+        )}
+      </Droppable>
 
-        <Droppable droppableId="progress">
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              <TaskColumn
-                title="In Progress"
-                tasks={tasks.progress}
-              />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
+      <Droppable droppableId="progress">
+        {(provided, snapshot) => (
+          <TaskColumn
+            title="In Progress"
+            tasks={tasks.progress}
+            provided={provided}
+            snapshot={snapshot}
+          />
+        )}
+      </Droppable>
 
-        <Droppable droppableId="done">
-          {(provided) => (
-            <div
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-            >
-              <TaskColumn
-                title="Done"
-                tasks={tasks.done}
-              />
-              {provided.placeholder}
-            </div>
-          )}
-        </Droppable>
-      </div>
-    </DragDropContext>
+      <Droppable droppableId="done">
+        {(provided, snapshot) => (
+          <TaskColumn
+            title="Done"
+            tasks={tasks.done}
+            provided={provided}
+            snapshot={snapshot}
+          />
+        )}
+      </Droppable>
+    </div>
   );
 }
 

@@ -14,10 +14,7 @@ function Sidebar() {
       name: "Tasks",
       path: "/tasks",
     },
-    {
-      name: "Teams",
-      path: "/teams",
-    },
+
   ];
 
   return (

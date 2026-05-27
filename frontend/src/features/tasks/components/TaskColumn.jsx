@@ -1,47 +1,31 @@
-import { Droppable } from "@hello-pangea/dnd";
-
 import TaskCard from "./TaskCard";
 
 import "../styles/task-column.css";
 
-function TaskColumn({
-  id,
-  title,
-  tasks,
-}) {
+function TaskColumn({ title, tasks, provided, snapshot }) {
   return (
-    <div className="task-column">
+    <div
+      className={`task-column ${snapshot.isDraggingOver ? "dragging-over" : ""}`}
+      ref={provided.innerRef}
+      {...provided.droppableProps}
+
+    >
+
       <div className="column-header">
         <h3>{title}</h3>
-
         <span>{tasks.length}</span>
       </div>
 
-      <Droppable droppableId={id}>
-        {(provided, snapshot) => (
-          <div
-            className={`column-tasks ${
-              snapshot.isDraggingOver
-                ? "dragging-over"
-                : ""
-            }`}
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-          >
-            {tasks.map((task, index) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                index={index}
-              />
-            ))}
+      <div className="column-tasks">
+        {tasks.map((task, index) => (
+          <TaskCard key={task.id} task={task} index={index} />
+        ))}
+      </div>
 
-            {provided.placeholder}
-          </div>
-        )}
-      </Droppable>
+      {provided.placeholder}
     </div>
   );
 }
 
 export default TaskColumn;
+
