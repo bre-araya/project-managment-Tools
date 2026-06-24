@@ -1,0 +1,32 @@
+.project-column {
+  background: #f6f8fa;
+  border-radius: 6px;
+  padding: 12px;
+  width: 280px;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-column.dragging-over {
+  background: #e6f7ff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.column-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(16,24,40,0.05);
+}
+
+.column-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+  flex: 1 1 auto;
+  overflow: auto;
+}

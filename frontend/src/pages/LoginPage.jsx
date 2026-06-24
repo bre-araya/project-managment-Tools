@@ -2,28 +2,41 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import logoPng from "../assets/images/logo.png";
-
 import "../styles/pages/login-page.css";
+import { login as loginApi } from "../services/authService";
 
 function LoginPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+    setError("");
 
     const trimmedEmail = email.trim();
 
-    // Demo auth: accept any non-empty email + password length >= 3
     if (!trimmedEmail || password.trim().length < 3) {
       setError("Enter an email and a password (min 3 chars)." );
       return;
     }
 
-    localStorage.setItem("pm_token", "demo_token");
-    navigate("/dashboard", { replace: true });
+    try {
+      setLoading(true);
+      const data = await loginApi({ email: trimmedEmail, password });
+
+      // Save token and basic user info
+      if (data.token) localStorage.setItem("pm_token", data.token);
+      localStorage.setItem("pm_user", JSON.stringify({ id: data.id, name: data.name, email: data.email }));
+
+      navigate("/dashboard", { replace: true });
+    } catch (err) {
+      setError(err?.response?.data?.message || err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -64,12 +77,15 @@ function LoginPage() {
 
           {error ? <div className="login__error">{error}</div> : null}
 
-          <button className="btn btn--primary login__submit" type="submit">
-            Login
+          <button className="btn btn--primary login__submit" type="submit" disabled={loading}>
+            {loading ? "Signing in..." : "Login"}
           </button>
 
-          <div className="login__hint">
-            Demo mode: enter any email and any password with 3+ characters.
+          <div className="login__meta">
+            <div className="login__hint">Use your account to sign in.</div>
+            <div>
+              <button type="button" className="login__link" onClick={() => navigate('/register')}>Create account</button>
+            </div>
           </div>
         </form>
       </div>

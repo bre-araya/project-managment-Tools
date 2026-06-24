@@ -23,10 +23,16 @@ const setTokenCookie = (res, token) => {
 
 // Register a new user
 exports.registerUser = asyncHandler(async (req, res, next) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, globalRole } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({ message: "Name, email and password are required" });
+  }
+
+  // validate role if provided
+  const allowedRoles = ["admin", "user"];
+  if (globalRole && !allowedRoles.includes(globalRole)) {
+    return res.status(400).json({ message: "Invalid role" });
   }
 
   const exists = await User.findOne({ email });
@@ -34,15 +40,17 @@ exports.registerUser = asyncHandler(async (req, res, next) => {
     return res.status(400).json({ message: "User already exists" });
   }
 
-  const user = await User.create({ name, email, password });
+  const user = await User.create({ name, email, password, globalRole });
 
-  const token = generateToken(user._id);
-  setTokenCookie(res, token);
-
+  // Do NOT auto-login on register. Return success message and user info.
   res.status(201).json({
-    id: user._id,
-    name: user.name,
-    email: user.email,
+    message: "Congrats! You registered successfully",
+    user: {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.globalRole,
+    },
   });
 });
 
@@ -63,7 +71,8 @@ exports.loginUser = asyncHandler(async (req, res, next) => {
   const token = generateToken(user._id);
   setTokenCookie(res, token);
 
-  res.json({ id: user._id, name: user.name, email: user.email });
+  // Return token in JSON to simplify testing with Postman (also set as cookie)
+  res.json({ id: user._id, name: user.name, email: user.email, token });
 });
 
 // Logout user (clear cookie)

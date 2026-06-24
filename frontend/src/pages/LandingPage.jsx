@@ -27,9 +27,9 @@ function LandingPage() {
           >
             Login Here
           </button>
-          <button className="btn btn--primary" onClick={() => navigate("/login")}
+          <button className="btn btn--primary" onClick={() => navigate("/register")}
           >
-            Continue
+            Register
           </button>
 
         </div>

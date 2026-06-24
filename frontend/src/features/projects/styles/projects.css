@@ -22,3 +22,21 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
 }
+
+/* Kanban layout: display columns side-by-side */
+.projects-kanban {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.projects-kanban::-webkit-scrollbar {
+  height: 8px;
+}
+
+.projects-kanban::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.12);
+  border-radius: 8px;
+}

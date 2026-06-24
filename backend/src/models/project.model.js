@@ -39,6 +39,12 @@ const projectSchema = new mongoose.Schema(
       type: [String],
       default: ["To Do", "In Progress", "Review", "Done"],
     }
+    ,
+    status: {
+      type: String,
+      default: "To Do",
+      trim: true,
+    }
   },
   {
     timestamps: true,

@@ -67,6 +67,16 @@
   gap: 14px;
 }
 
+.login__success {
+  background: linear-gradient(180deg, rgba(236, 253, 245, 0.9), rgba(245, 255, 250, 0.9));
+  border: 1px solid rgba(34,197,94,0.12);
+  padding: 18px;
+  border-radius: 12px;
+  color: #065f46;
+  font-weight: 800;
+  text-align: center;
+}
+
 .field {
   display: grid;
   gap: 8px;
@@ -90,6 +100,12 @@
 .field__input:focus {
   border-color: rgba(79, 70, 229, 0.45);
   box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12);
+}
+
+.field__input[type="select"],
+.field__input select,
+.field__input[role="combobox"] {
+  appearance: none;
 }
 
 .login__error {
@@ -132,5 +148,27 @@
   font-size: 12.5px;
   line-height: 1.5;
   margin-top: 2px;
+}
+
+.login__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.login__link {
+  background: transparent;
+  border: none;
+  color: rgba(79, 70, 229, 0.95);
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn--ghost {
+  background: transparent;
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  color: rgba(15, 23, 42, 0.9);
 }
 

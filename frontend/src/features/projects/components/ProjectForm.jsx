@@ -1,12 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./../styles/project-form.css";
 
-function ProjectForm({ onSubmit, loading }) {
+function ProjectForm({ onSubmit, loading, initial = {} }) {
   const [form, setForm] = useState({
     name: "",
-    deadline: "",
-    progress: 0,
+    description: "",
+    status: "To Do",
   });
+
+  useEffect(() => {
+    if (initial) {
+      setForm((f) => ({ ...f, ...initial }));
+    }
+  }, [initial]);
 
   const handleChange = (e) => {
     setForm({
@@ -29,24 +35,23 @@ function ProjectForm({ onSubmit, loading }) {
         required
       />
 
-      <input
-        name="deadline"
-        type="date"
+      <textarea
+        name="description"
+        placeholder="Short description (optional)"
         onChange={handleChange}
-        required
+        rows={3}
       />
 
-      <input
-        name="progress"
-        type="number"
-        placeholder="Progress %"
-        onChange={handleChange}
-        min="0"
-        max="100"
-      />
+      <label>Initial Status</label>
+      <select name="status" onChange={handleChange} defaultValue="To Do">
+        <option>To Do</option>
+        <option>In Progress</option>
+        <option>Review</option>
+        <option>Done</option>
+      </select>
 
       <button disabled={loading}>
-        {loading ? "Creating..." : "Create Project"}
+        {loading ? "Saving..." : (initial && initial.name ? "Save Changes" : "Create Project")}
       </button>
     </form>
   );
