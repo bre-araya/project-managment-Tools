@@ -27,6 +27,17 @@ function KanbanBoard({ tasks }) {
         )}
       </Droppable>
 
+      <Droppable droppableId="review">
+        {(provided, snapshot) => (
+          <TaskColumn
+            title="Review"
+            tasks={tasks.review}
+            provided={provided}
+            snapshot={snapshot}
+          />
+        )}
+      </Droppable>
+
       <Droppable droppableId="done">
         {(provided, snapshot) => (
           <TaskColumn

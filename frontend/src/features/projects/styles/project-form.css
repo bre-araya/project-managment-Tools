@@ -1,59 +1,69 @@
 .project-form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  margin-top: 10px;
-}
+  gap: 1rem;
 
-/* INPUT FIELDS */
-.project-form input {
+  max-width: 500px;
   width: 100%;
-  padding: 12px 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  outline: none;
-  font-size: 14px;
-  transition: 0.2s ease;
+  margin: auto;
+  padding: 1.5rem;
+
   background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-.project-form input:focus {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+.project-form input,
+.project-form textarea,
+.project-form select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+
+  border: 1px solid #082f6a;
+  border-radius: 8px;
+
+  font: inherit;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
 }
 
-/* PLACEHOLDER STYLE */
-.project-form input::placeholder {
-  color: #9ca3af;
+.project-form textarea {
+  resize: vertical;
 }
 
-/* BUTTON */
+.project-form input:focus,
+.project-form textarea:focus,
+.project-form select:focus {
+  border-color: #072462;
+  box-shadow: 0 0 0 3px rgba(92, 133, 221, 0.15);
+}
+
+.project-form label {
+  font-weight: 600;
+  color: #374151;
+}
+
 .project-form button {
-  padding: 12px 14px;
+  padding: 0.85rem;
   border: none;
-  border-radius: 10px;
-  background: var(--primary-color);
-  color: white;
+  border-radius: 8px;
+
+  background: #2563eb;
+  color: #fff;
+
+  font: inherit;
   font-weight: 600;
   cursor: pointer;
-  transition: 0.2s ease;
+
+  transition: background .2s, transform .2s;
 }
 
-.project-form button:hover {
-  background: var(--secondary-color);
+.project-form button:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
 }
 
-/* DISABLED STATE */
 .project-form button:disabled {
-  opacity: 0.6;
+  opacity: .6;
   cursor: not-allowed;
-}
-
-/* RESPONSIVE (optional but real-world ready) */
-@media (max-width: 480px) {
-  .project-form input,
-  .project-form button {
-    font-size: 13px;
-    padding: 10px 12px;
-  }
 }

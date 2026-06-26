@@ -1,20 +1,40 @@
 .projects-page {
-  padding: 20px;
+  padding: 24px;
 }
 
 .projects-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f8fbff 0%, #eef4ff 100%);
+  border: 1px solid #dbeafe;
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(37, 99, 235, 0.08);
+}
+
+.projects-header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #103fab;
 }
 
 .projects-header button {
-  background: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), #0b2e66);
   color: white;
   border: none;
-  padding: 10px 16px;
-  border-radius: 10px;
+  padding: 12px 18px;
+  border-radius: 999px;
   cursor: pointer;
+  font-weight: 600;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.projects-header button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 12px 24px rgba(37, 99, 235, 0.24);
 }
 
 .projects-grid {

@@ -1,26 +1,48 @@
 .task-column {
-  background: #f9fafb;
-  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+  border: 1px solid #e2e8f0;
+  border-radius: 18px;
   padding: 16px;
   min-height: 500px;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+}
+
+.task-column.dragging-over {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.15);
 }
 
 .column-header {
   display: flex;
   justify-content: space-between;
-  margin-bottom: 20px;
+  align-items: center;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.column-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #0f172a;
 }
 
 .column-header span {
-  background: white;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-
+  background: #eff6ff;
+  color: #2563eb;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
   display: flex;
   align-items: center;
   justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
 }
+
 .column-tasks {
   min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }

@@ -8,6 +8,7 @@ import RequireAuth from "../pages/RequireAuth";
 import DashboardPage from "../pages/DashboardPage";
 import ProjectsPage from "../features/projects/pages/ProjectsPage";
 import TasksPage from "../features/tasks/pages/TasksPage";
+import DashboardLayout from "../components/layouts/DashboardLayout";
 
 function AppRoutes() {
   return (
@@ -30,7 +31,9 @@ function AppRoutes() {
           path="/projects"
           element={
             <RequireAuth>
-              <ProjectsPage />
+              <DashboardLayout>
+                <ProjectsPage />
+              </DashboardLayout>
             </RequireAuth>
           }
         />
@@ -39,7 +42,9 @@ function AppRoutes() {
           path="/tasks"
           element={
             <RequireAuth>
-              <TasksPage />
+              <DashboardLayout>
+                <TasksPage />
+              </DashboardLayout>
             </RequireAuth>
           }
         />

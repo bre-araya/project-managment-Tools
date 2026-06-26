@@ -17,9 +17,10 @@ function TaskColumn({ title, tasks, provided, snapshot }) {
       </div>
 
       <div className="column-tasks">
-        {tasks.map((task, index) => (
-          <TaskCard key={task.id} task={task} index={index} />
-        ))}
+        {tasks.map((task, index) => {
+          const taskId = task?._id || task?.id || `task-${title}-${index}`;
+          return <TaskCard key={taskId} task={task} index={index} />;
+        })}
       </div>
 
       {provided.placeholder}

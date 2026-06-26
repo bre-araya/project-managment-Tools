@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import api from "../../../services/api";
 
 import "../styles/task-form.css";
 
@@ -6,6 +7,7 @@ function TaskForm({
   onSubmit,
   onClose,
 }) {
+  const [projects, setProjects] = useState([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -13,7 +15,21 @@ function TaskForm({
     dueDate: "",
     priority: "Medium",
     status: "todo",
+    project: localStorage.getItem("activeProjectId") || "",
   });
+
+  useEffect(() => {
+    const loadProjects = async () => {
+      try {
+        const res = await api.get("/api/projects");
+        setProjects(res.data || []);
+      } catch (err) {
+        console.error("Failed to load projects", err);
+      }
+    };
+
+    loadProjects();
+  }, []);
 
   const handleChange = (e) => {
     setForm({
@@ -52,6 +68,20 @@ function TaskForm({
         onChange={handleChange}
       />
 
+      <select
+        name="project"
+        value={form.project}
+        onChange={handleChange}
+        required
+      >
+        <option value="">Select a project</option>
+        {projects.map((project) => (
+          <option key={project._id || project.id} value={project._id || project.id}>
+            {project.name}
+          </option>
+        ))}
+      </select>
+
       <input
         name="assignee"
         placeholder="Assignee Name"
@@ -83,6 +113,10 @@ function TaskForm({
 
         <option value="progress">
           In Progress
+        </option>
+
+        <option value="review">
+          Review
         </option>
 
         <option value="done">

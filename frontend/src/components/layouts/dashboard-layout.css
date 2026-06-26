@@ -6,13 +6,20 @@
 /* SIDEBAR */
 
 .sidebar {
-  width: 260px;
+  width: 240px;
   background: var(--white-color);
   border-right: 1px solid var(--border-color);
   padding: 24px;
   position: sticky;
   top: 0;
   height: 100vh;
+  transition: width 0.3s ease;
+  overflow: hidden;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
 }
 
 .logo {
@@ -20,6 +27,59 @@
   font-weight: 700;
   color: var(--primary-color);
   margin-bottom: 40px;
+}
+
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.sidebar-toggle {
+  background: #dde5f2;
+  color: #4e45cd;
+  border: 1px solid var(--border-color);
+  width: 25px;
+  height: 25px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transform: translateY(-22px); /* Move up by 5px */
+  transition: transform 180ms ease, background 180ms ease;
+}
+
+.sidebar-toggle:focus,
+.sidebar-open-toggle:focus {
+  outline: 2px solid rgba(59,130,246,0.4);
+  outline-offset: 2px;
+}
+
+.sidebar-open-toggle {
+  position: fixed;
+  top: 16px;
+  left: 16px;
+  z-index: 60;
+  width: 25px;
+  height: 25px;
+  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  background: #dde5f2;
+  color: var(--primary-color);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+}
+
+.toggle-icon {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1;
 }
 
 .sidebar-menu {
@@ -34,6 +94,9 @@
   transition: var(--transition);
   color: #4b5563;
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .menu-item:hover {
@@ -44,6 +107,67 @@
 .menu-item.active {
   background: var(--primary-color);
   color: white;
+}
+
+.menu-icon {
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(99,102,241,0.08);
+  color: var(--primary-color);
+  border-radius: 8px;
+  font-weight: 700;
+}
+
+.menu-label {
+  white-space: nowrap;
+  transition: opacity 150ms ease, transform 150ms ease;
+}
+
+/* Collapsed state */
+.sidebar.collapsed {
+  width: 0;
+  padding: 0;
+  border-right: none;
+  overflow: hidden;
+}
+
+.sidebar.collapsed .sidebar-header,
+.sidebar.collapsed .sidebar-menu {
+  display: none;
+}
+
+.sidebar.collapsed .logo {
+  font-size: 16px;
+  margin-bottom: 18px;
+}
+
+.sidebar.collapsed .menu-label {
+  opacity: 0;
+  transform: translateX(-6px);
+  width: 0;
+  pointer-events: none;
+}
+
+.sidebar.collapsed .menu-item {
+  justify-content: center;
+  padding: 10px;
+}
+
+/* Tooltip on hover when collapsed */
+.sidebar.collapsed .menu-item[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: 80px;
+  background: rgba(31,41,55,0.95);
+  color: white;
+  padding: 6px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  font-size: 13px;
+  transform: translateY(-50%);
 }
 
 /* CONTENT */
@@ -58,7 +182,7 @@
 
 .header {
   background: white;
-  padding: 20px 32px;
+  padding: 20px 32px 20px 70px;
   border-bottom: 1px solid var(--border-color);
 
   display: flex;
@@ -113,10 +237,7 @@
 /* RESPONSIVE */
 
 @media (max-width: 992px) {
-  .sidebar {
-    display: none;
-  }
-
+  /* don't forcibly hide the sidebar; manage visibility via .mobile-hidden */
   .header {
     flex-direction: column;
     align-items: flex-start;
@@ -128,6 +249,29 @@
 
   .header-actions input {
     width: 100%;
+  }
+
+  /* mobile open/close button when sidebar is hidden */
+  .mobile-sidebar-toggle {
+    position: fixed;
+    left: 12px;
+    top: 12px;
+    z-index: 60;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 1px solid var(--border-color);
+    background: var(--white-color);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 18px rgba(15,23,42,0.06);
+    cursor: pointer;
+  }
+
+  /* if sidebar is not hidden, keep it full width behavior but allow collapsed state to work */
+  .sidebar.mobile-hidden {
+    display: none;
   }
 }
 

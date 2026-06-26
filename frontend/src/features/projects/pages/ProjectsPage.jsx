@@ -1,15 +1,18 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import "../styles/projects.css";
 
-import ProjectCard from "../components/ProjectCard";
+//import ProjectCard from "../components/ProjectCard";
 import ProjectModal from "../components/ProjectModal";
 import ProjectsKanban from "../components/ProjectsKanban";
 import * as projectApi from "../../../services/projectService";
 
 function ProjectsPage() {
-  const [openModal, setOpenModal] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const openModal = searchParams.get("modal") === "new";
 
   useEffect(() => {
     let mounted = true;
@@ -34,7 +37,7 @@ function ProjectsPage() {
       setLoading(true);
       const created = await projectApi.createProject(project);
       setProjects((prev) => [created, ...prev]);
-      setOpenModal(false);
+      handleCloseModal();
     } catch (err) {
       console.error("Create project failed", err);
     } finally {
@@ -51,11 +54,18 @@ function ProjectsPage() {
     }
   };
 
-  const [editing, setEditing] = useState(null);
+  const handleCloseModal = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("modal");
+    setSearchParams(nextParams, { replace: true });
+    setEditing(null);
+  };
 
   const handleEdit = (project) => {
     setEditing(project);
-    setOpenModal(true);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set("modal", "new");
+    setSearchParams(nextParams, { replace: true });
   };
 
   const handleDelete = async (project) => {
@@ -95,9 +105,6 @@ function ProjectsPage() {
       <div className="projects-header">
         <h1>Projects</h1>
 
-        <button onClick={() => setOpenModal(true)}>
-          + New Project
-        </button>
       </div>
 
       {loading ? (
@@ -114,7 +121,7 @@ function ProjectsPage() {
       )}
 
       {openModal && (
-        <ProjectModal onClose={() => { setOpenModal(false); setEditing(null); }}
+        <ProjectModal onClose={handleCloseModal}
           onSubmit={editing ? handleUpdate : handleAddProject}
           initial={editing}
         />

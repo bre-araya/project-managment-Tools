@@ -6,9 +6,12 @@ function TaskCard({
   task,
   index,
 }) {
+  const taskId = task?._id || task?.id || `task-${index}`;
+  const priority = String(task?.priority || "Medium").toLowerCase();
+
   return (
     <Draggable
-      draggableId={task.id.toString()}
+      draggableId={String(taskId)}
       index={index}
     >
       {(provided, snapshot) => (
@@ -22,12 +25,10 @@ function TaskCard({
           {...provided.draggableProps}
           {...provided.dragHandleProps}
         >
-          <h4>{task.title}</h4>
+          <h4>{task?.title || "Untitled task"}</h4>
 
-          <span
-            className={`priority ${task.priority.toLowerCase()}`}
-          >
-            {task.priority}
+          <span className={`priority ${priority}`}>
+            {task?.priority || "Medium"}
           </span>
         </div>
       )}

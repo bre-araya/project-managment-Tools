@@ -1,33 +1,129 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { DragDropContext } from "@hello-pangea/dnd";
 
 import KanbanBoard from "../components/KanbanBoard";
 import TaskModal from "../components/TaskModal";
-
-import { initialTasks } from "../data/tasks";
+import api from "../../../services/api";
 
 import "../styles/tasks.css";
 
 function TasksPage() {
-  const [tasks, setTasks] = useState(initialTasks);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [tasks, setTasks] = useState({ todo: [], progress: [], review: [], done: [] });
+  const openModal = searchParams.get("modal") === "new";
 
-  const [openModal, setOpenModal] =
-    useState(false);
+  const normalizeTask = (task) => {
+    const rawStatus = task?.status?.toString().trim().toLowerCase();
+    const normalizedStatus =
+      rawStatus === "in progress" || rawStatus === "progress"
+        ? "progress"
+        : rawStatus === "review"
+        ? "review"
+        : rawStatus === "done"
+        ? "done"
+        : "todo";
+
+    return {
+      ...task,
+      id: task?._id || task?.id,
+      _id: task?._id || task?.id,
+      status: normalizedStatus,
+      title: task?.title || "Untitled task",
+      priority: task?.priority || "Medium",
+    };
+  };
+
+  useEffect(() => {
+    const loadTasks = async () => {
+      try {
+        const projectId = localStorage.getItem("activeProjectId");
+        if (!projectId) {
+          setTasks({ todo: [], progress: [], review: [], done: [] });
+          return;
+        }
+
+        const res = await api.get(`/api/tasks/project/${projectId}`);
+        const normalized = {
+          todo: [],
+          progress: [],
+          review: [],
+          done: [],
+        };
+
+        res.data.forEach((task) => {
+          const normalizedTask = normalizeTask(task);
+          if (normalizedTask.status === "progress") {
+            normalized.progress.push(normalizedTask);
+          } else if (normalizedTask.status === "review") {
+            normalized.review.push(normalizedTask);
+          } else if (normalizedTask.status === "done") {
+            normalized.done.push(normalizedTask);
+          } else {
+            normalized.todo.push(normalizedTask);
+          }
+        });
+
+        setTasks(normalized);
+      } catch (err) {
+        console.error("Failed to load tasks", err);
+      }
+    };
+
+    loadTasks();
+  }, []);
 
   // CREATE TASK
-  const handleCreateTask = (task) => {
-    setTasks((prev) => ({
-      ...prev,
+  const handleCreateTask = async (task) => {
+    try {
+      const projectId = localStorage.getItem("activeProjectId");
+      const selectedProjectId = task.project || projectId;
 
-      [task.status]: [
-        task,
-        ...prev[task.status],
-      ],
-    }));
+      if (!selectedProjectId) {
+        alert("Please select a project first.");
+        return;
+      }
+
+      const payload = {
+        project: selectedProjectId,
+        title: task.title,
+        description: task.description,
+        status: task.status || "todo",
+        priority: task.priority?.toLowerCase() || "medium",
+        assignees: [],
+      };
+
+      const res = await api.post("/api/tasks", payload);
+      const createdTask = normalizeTask(res.data);
+      const columnKey =
+        createdTask.status === "progress"
+          ? "progress"
+          : createdTask.status === "review"
+          ? "review"
+          : createdTask.status === "done"
+          ? "done"
+          : "todo";
+
+      setTasks((prev) => ({
+        ...prev,
+        [columnKey]: [createdTask, ...(prev[columnKey] || [])],
+      }));
+
+      handleCloseModal();
+    } catch (err) {
+      console.error("Create task failed", err);
+      alert(err?.response?.data?.message || "Create task failed");
+    }
+  };
+
+  const handleCloseModal = () => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete("modal");
+    setSearchParams(nextParams, { replace: true });
   };
 
   // DRAG & DROP
-  const handleDragEnd = (result) => {
+  const handleDragEnd = async (result) => {
     const { source, destination } =
       result;
 
@@ -89,13 +185,15 @@ function TasksPage() {
 
     setTasks({
       ...tasks,
-
-      [source.droppableId]:
-        sourceColumn,
-
-      [destination.droppableId]:
-        destinationColumn,
+      [source.droppableId]: sourceColumn,
+      [destination.droppableId]: destinationColumn,
     });
+
+    try {
+      await api.put(`/api/tasks/${movedTask._id}`, { status: destination.droppableId });
+    } catch (err) {
+      console.error("Failed to update task status", err);
+    }
   };
 
   return (
@@ -110,14 +208,6 @@ function TasksPage() {
             efficiently
           </p>
         </div>
-
-        <button
-          onClick={() =>
-            setOpenModal(true)
-          }
-        >
-          Create Task
-        </button>
       </div>
 
       {/* BOARD */}
@@ -130,12 +220,8 @@ function TasksPage() {
       {/* MODAL */}
       {openModal && (
         <TaskModal
-          onClose={() =>
-            setOpenModal(false)
-          }
-          onCreateTask={
-            handleCreateTask
-          }
+          onClose={handleCloseModal}
+          onCreateTask={handleCreateTask}
         />
       )}
     </div>
