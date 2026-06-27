@@ -6,7 +6,7 @@ function Sidebar() {
   const menus = [
     {
       name: "Dashboard",
-      path: "/",
+      path: "/dashboard",
     },
     {
       name: "Projects",

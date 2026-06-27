@@ -8,13 +8,13 @@ const authorizeProjectRole = require("../middleware/role.middleware");
 
 router.use(protect);
 
-// ⚠️ Managers and Developers can create task cards
+// Admins and project members with task rights can create task cards
 router.route("/").post(
-  authorizeProjectRole(["project-manager", "developer"]), 
+  authorizeProjectRole(["project-manager", "developer"]),
   createTask
 );
 
-// ⚠️ Managers and Developers can update tasks (e.g., drag-and-drop column status changes)
+// Admins and project members with task rights can update tasks (e.g., drag-and-drop column status changes)
 router.route("/:id").put(
   async (req, res, next) => {
     // Lookup task to find its parent project ID before running role check
@@ -29,9 +29,9 @@ router.route("/:id").put(
   updateTask
 );
 
-// ⚠️ Anyone added to the project board can fetch and read the task list view
+// Admins and board members can fetch and read the task list view
 router.route("/project/:projectId").get(
-  authorizeProjectRole(["project-manager", "developer", "viewer"]), 
+  authorizeProjectRole(["project-manager", "developer", "viewer"]),
   getProjectTasks
 );
 

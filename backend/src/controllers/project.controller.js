@@ -5,10 +5,23 @@ const asyncHandler = require("../utils/asyncHandler");
 // @desc    Create a new project board
 // @route   POST /api/projects
 exports.createProject = asyncHandler(async (req, res, next) => {
-  const { name, description, status } = req.body;
+  const { name, description, status, assignee } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "Project name is required" });
+  }
+
+  let assignedUserId = assignee || null;
+  if (assignedUserId) {
+    const assignedUser = await User.findById(assignedUserId);
+    if (!assignedUser) {
+      return res.status(404).json({ message: "Assigned user not found" });
+    }
+  }
+
+  const members = [{ user: req.user._id, role: "project-manager" }];
+  if (assignedUserId && assignedUserId.toString() !== req.user._id.toString()) {
+    members.push({ user: assignedUserId, role: "developer" });
   }
 
   const project = await Project.create({
@@ -16,7 +29,7 @@ exports.createProject = asyncHandler(async (req, res, next) => {
     description,
     status: status || undefined,
     owner: req.user._id,
-    members: [{ user: req.user._id, role: "project-manager" }]
+    members,
   });
 
   res.status(201).json(project);
@@ -25,9 +38,11 @@ exports.createProject = asyncHandler(async (req, res, next) => {
 // @desc    Get all projects the logged-in user belongs to
 // @route   GET /api/projects
 exports.getProjects = asyncHandler(async (req, res, next) => {
-  const projects = await Project.find({
-    "members.user": req.user._id
-  }).populate("owner", "name email avatar");
+  const filter = req.user.globalRole === "admin"
+    ? {}
+    : { "members.user": req.user._id };
+
+  const projects = await Project.find(filter).populate("owner", "name email avatar");
 
   res.json(projects);
 });
@@ -77,9 +92,7 @@ exports.getProject = asyncHandler(async (req, res, next) => {
 
   // Normalize owner and member ids whether populated or not
   const ownerId = project.owner && project.owner._id ? project.owner._id.toString() : project.owner.toString();
-  console.log("getProject: ownerId=", ownerId, "caller=", req.user._id.toString());
-  console.log("members:", project.members.map(m => (m.user && m.user._id ? m.user._id.toString() : m.user.toString())));
-  const isMember = ownerId === req.user._id.toString() ||
+  const isMember = req.user.globalRole === "admin" || ownerId === req.user._id.toString() ||
     project.members.some(m => {
       const memberId = m.user && m.user._id ? m.user._id.toString() : m.user.toString();
       return memberId === req.user._id.toString();
@@ -102,9 +115,9 @@ exports.updateProject = asyncHandler(async (req, res, next) => {
     return res.status(404).json({ message: "Project not found" });
   }
 
-  // Only owner or project-manager can update
+  // Admins can manage everything; otherwise only owner or project-manager can update
   const callerMember = project.members.find(m => m.user.toString() === req.user._id.toString());
-  if (project.owner.toString() !== req.user._id.toString() && (!callerMember || callerMember.role !== "project-manager")) {
+  if (req.user.globalRole !== "admin" && project.owner.toString() !== req.user._id.toString() && (!callerMember || callerMember.role !== "project-manager")) {
     return res.status(403).json({ message: "Not authorized to update this project" });
   }
 
@@ -126,9 +139,9 @@ exports.deleteProject = asyncHandler(async (req, res, next) => {
     return res.status(404).json({ message: "Project not found" });
   }
 
-  // Only owner may delete the project (handle populated owner)
+  // Admins can delete any project; otherwise only owner may delete it
   const ownerId = project.owner && project.owner._id ? project.owner._id.toString() : project.owner.toString();
-  if (ownerId !== req.user._id.toString()) {
+  if (req.user.globalRole !== "admin" && ownerId !== req.user._id.toString()) {
     return res.status(403).json({ message: "Only project owner can delete the project" });
   }
 

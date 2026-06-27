@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { logout } from "../../services/authService";
 
 function Header() {
   const { pathname } = useLocation();
@@ -36,9 +37,20 @@ function Header() {
     if (route === "projects") {
       navigate("/projects?modal=new");
     } else if (route === "tasks") {
-      navigate("/tasks?modal=new");
+      const targetPath = pathname.startsWith("/tasks/") ? pathname : "/tasks";
+      navigate(`${targetPath}${targetPath.includes("?") ? "&" : "?"}modal=new`);
     } else {
       navigate("/projects?modal=new");
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error("Logout failed", err);
+    } finally {
+      navigate("/login", { replace: true });
     }
   };
 
@@ -53,6 +65,9 @@ function Header() {
         <input type="text" placeholder="Search..." />
 
         <button type="button" onClick={handleActionClick}>{action}</button>
+        <button type="button" className="logout-btn" onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </header>
   );

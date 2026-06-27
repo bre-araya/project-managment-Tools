@@ -19,6 +19,13 @@ const authorizeProjectRole = (allowedRoles) => {
         return res.status(404).json({ message: "Target project workspace not found" });
       }
 
+      // Admins can always manage the system; bypass project-role checks.
+      if (req.user.globalRole === "admin") {
+        req.projectContext = project;
+        req.userProjectRole = "admin";
+        return next();
+      }
+
       // Locate the caller within the board's registered membership array
       const memberRecord = project.members.find(
         (m) => m.user.toString() === req.user._id.toString()

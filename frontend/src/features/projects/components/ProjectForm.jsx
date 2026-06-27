@@ -1,24 +1,35 @@
 import { useState, useEffect } from "react";
+import api from "../../../services/api";
 import "./../styles/project-form.css";
 
 function ProjectForm({ onSubmit, loading, initial = {} }) {
+  const [users, setUsers] = useState([]);
   const [form, setForm] = useState({
-    name: "",
-    description: "",
-    status: "To Do",
+    name: initial?.name || "",
+    description: initial?.description || "",
+    status: initial?.status || "To Do",
+    assignee: initial?.assignee || "",
   });
 
   useEffect(() => {
-    if (initial) {
-      setForm((f) => ({ ...f, ...initial }));
-    }
-  }, [initial]);
+    const loadUsers = async () => {
+      try {
+        const res = await api.get("/api/auth/users");
+        setUsers(res.data || []);
+      } catch (err) {
+        console.error("Failed to load users", err);
+      }
+    };
+
+    loadUsers();
+  }, []);
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -41,6 +52,16 @@ function ProjectForm({ onSubmit, loading, initial = {} }) {
         onChange={handleChange}
         rows={3}
       />
+
+      <label>Assign to user</label>
+      <select name="assignee" onChange={handleChange} value={form.assignee || ""}>
+        <option value="">No assignee</option>
+        {users.map((user) => (
+          <option key={user._id || user.id} value={user._id || user.id}>
+            {user.name} ({user.email})
+          </option>
+        ))}
+      </select>
 
       <label>Initial Status</label>
       <select name="status" onChange={handleChange} defaultValue="To Do">

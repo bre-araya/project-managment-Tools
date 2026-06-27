@@ -88,13 +88,45 @@ exports.logoutUser = asyncHandler(async (req, res, next) => {
 
 // Get current user profile
 exports.getMe = asyncHandler(async (req, res, next) => {
-  const user = req.user; // set by protect middleware
-  res.json({ id: user._id, name: user.name, email: user.email, avatar: user.avatar, role: user.globalRole });
+  const { _id, name, email, avatar, globalRole } = req.user;
+  res.json({ id: _id, name, email, avatar, role: globalRole });
+});
+
+// Admin: get all users
+exports.getAllUsers = asyncHandler(async (req, res, next) => {
+  if (req.user.globalRole !== "admin") {
+    return res.status(403).json({ message: "Access denied" });
+  }
+
+  const users = await User.find({}).select("-password").sort({ createdAt: -1 });
+  res.json(users);
+});
+
+// Admin: update a user's role
+exports.updateUserRole = asyncHandler(async (req, res, next) => {
+  if (req.user.globalRole !== "admin") {
+    return res.status(403).json({ message: "Access denied" });
+  }
+
+  const { role } = req.body;
+  if (!role || !["admin", "user"].includes(role)) {
+    return res.status(400).json({ message: "Invalid role" });
+  }
+
+  const user = await User.findById(req.params.id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  user.globalRole = role;
+  await user.save();
+
+  res.json({ message: "User role updated", user: { id: user._id, name: user.name, email: user.email, role: user.globalRole } });
 });
 
 // Update profile (name, email)
 exports.updateProfile = asyncHandler(async (req, res, next) => {
-  const user = req.user;
+  const { user } = req;
   const { name, email } = req.body;
 
   if (email && email !== user.email) {
