@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useParams } from "react-router-dom";
 import { DragDropContext } from "@hello-pangea/dnd";
 
 import KanbanBoard from "../components/KanbanBoard";
@@ -9,11 +9,13 @@ import api from "../../../services/api";
 import "../styles/tasks.css";
 
 function TasksPage() {
+  const { projectId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [tasks, setTasks] = useState({ todo: [], progress: [], review: [], done: [] });
   const openModal = searchParams.get("modal") === "new";
 
   const normalizeTask = (task) => {
+    // Normalize status: convert "To Do" → "todo", "In Progress" → "progress", etc.
     const rawStatus = task?.status?.toString().trim().toLowerCase();
     const normalizedStatus =
       rawStatus === "in progress" || rawStatus === "progress"
@@ -37,7 +39,6 @@ function TasksPage() {
   useEffect(() => {
     const loadTasks = async () => {
       try {
-        const projectId = localStorage.getItem("activeProjectId");
         if (!projectId) {
           setTasks({ todo: [], progress: [], review: [], done: [] });
           return;
@@ -71,12 +72,11 @@ function TasksPage() {
     };
 
     loadTasks();
-  }, []);
+  }, [projectId]);
 
   // CREATE TASK
   const handleCreateTask = async (task) => {
     try {
-      const projectId = localStorage.getItem("activeProjectId");
       const selectedProjectId = task.project || projectId;
 
       if (!selectedProjectId) {
@@ -88,7 +88,7 @@ function TasksPage() {
         project: selectedProjectId,
         title: task.title,
         description: task.description,
-        status: task.status || "todo",
+        status: task.status || "To Do",
         priority: task.priority?.toLowerCase() || "medium",
         assignees: [],
       };
@@ -124,64 +124,41 @@ function TasksPage() {
 
   // DRAG & DROP
   const handleDragEnd = async (result) => {
-    const { source, destination } =
-      result;
+    const { source, destination } = result;
 
     // dropped outside
     if (!destination) return;
 
     // same column reorder
-    if (
-      source.droppableId ===
-      destination.droppableId
-    ) {
-      const column = [
-        ...tasks[source.droppableId],
-      ];
-
-      const [removed] = column.splice(
-        source.index,
-        1
-      );
-
-      column.splice(
-        destination.index,
-        0,
-        removed
-      );
+    if (source.droppableId === destination.droppableId) {
+      const column = [...tasks[source.droppableId]];
+      const [removed] = column.splice(source.index, 1);
+      column.splice(destination.index, 0, removed);
 
       setTasks({
         ...tasks,
         [source.droppableId]: column,
       });
-
       return;
     }
 
     // move between columns
-    const sourceColumn = [
-      ...tasks[source.droppableId],
-    ];
+    const sourceColumn = [...tasks[source.droppableId]];
+    const destinationColumn = [...tasks[destination.droppableId]];
+    const [movedTask] = sourceColumn.splice(source.index, 1);
 
-    const destinationColumn = [
-      ...tasks[destination.droppableId],
-    ];
-
-    const [movedTask] =
-      sourceColumn.splice(
-        source.index,
-        1
-      );
+    // Map normalized status keys to backend status values
+    const statusMap = {
+      todo: "To Do",
+      progress: "In Progress",
+      review: "Review",
+      done: "Done",
+    };
 
     // update task status
-    movedTask.status =
-      destination.droppableId;
+    movedTask.status = destination.droppableId;
 
-    destinationColumn.splice(
-      destination.index,
-      0,
-      movedTask
-    );
+    destinationColumn.splice(destination.index, 0, movedTask);
 
     setTasks({
       ...tasks,
@@ -190,7 +167,8 @@ function TasksPage() {
     });
 
     try {
-      await api.put(`/api/tasks/${movedTask._id}`, { status: destination.droppableId });
+      const backendStatus = statusMap[destination.droppableId] || "To Do";
+      await api.put(`/api/tasks/${movedTask._id}`, { status: backendStatus });
     } catch (err) {
       console.error("Failed to update task status", err);
     }
@@ -222,6 +200,7 @@ function TasksPage() {
         <TaskModal
           onClose={handleCloseModal}
           onCreateTask={handleCreateTask}
+          projectId={projectId}
         />
       )}
     </div>

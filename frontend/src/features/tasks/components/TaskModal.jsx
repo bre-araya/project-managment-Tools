@@ -5,6 +5,7 @@ import "../styles/task-modal.css";
 function TaskModal({
   onClose,
   onCreateTask,
+  projectId,
 }) {
   return (
     <div className="modal-overlay">
@@ -20,6 +21,7 @@ function TaskModal({
         <TaskForm
           onSubmit={onCreateTask}
           onClose={onClose}
+          projectId={projectId}
         />
       </div>
     </div>

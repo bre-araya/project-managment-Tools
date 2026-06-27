@@ -6,6 +6,7 @@ import "../styles/task-form.css";
 function TaskForm({
   onSubmit,
   onClose,
+  projectId,
 }) {
   const [projects, setProjects] = useState([]);
   const [form, setForm] = useState({
@@ -15,7 +16,7 @@ function TaskForm({
     dueDate: "",
     priority: "Medium",
     status: "todo",
-    project: localStorage.getItem("activeProjectId") || "",
+    project: projectId || "",
   });
 
   useEffect(() => {
@@ -30,6 +31,13 @@ function TaskForm({
 
     loadProjects();
   }, []);
+
+  useEffect(() => {
+    setForm((prev) => ({
+      ...prev,
+      project: projectId || prev.project,
+    }));
+  }, [projectId]);
 
   const handleChange = (e) => {
     setForm({
