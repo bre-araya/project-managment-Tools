@@ -15,7 +15,6 @@ function TasksPage() {
   const openModal = searchParams.get("modal") === "new";
 
   const normalizeTask = (task) => {
-    // Normalize status: convert "To Do" → "todo", "In Progress" → "progress", etc.
     const rawStatus = task?.status?.toString().trim().toLowerCase();
     const normalizedStatus =
       rawStatus === "in progress" || rawStatus === "progress"
@@ -26,6 +25,16 @@ function TasksPage() {
         ? "done"
         : "todo";
 
+    const progressValue = Number.isFinite(Number(task?.progress))
+      ? Number(task.progress)
+      : rawStatus === "done" || rawStatus === "completed"
+      ? 100
+      : rawStatus === "review"
+      ? 75
+      : rawStatus === "in progress" || rawStatus === "progress"
+      ? 50
+      : 0;
+
     return {
       ...task,
       id: task?._id || task?.id,
@@ -33,6 +42,8 @@ function TasksPage() {
       status: normalizedStatus,
       title: task?.title || "Untitled task",
       priority: task?.priority || "Medium",
+      dueDate: task?.dueDate || task?.deadline || "",
+      progress: progressValue,
     };
   };
 
@@ -90,7 +101,9 @@ function TasksPage() {
         description: task.description,
         status: task.status || "To Do",
         priority: task.priority?.toLowerCase() || "medium",
-        assignees: [],
+        assignees: Array.isArray(task.assignees) ? task.assignees : (task.assignee ? [task.assignee] : []),
+        dueDate: task.dueDate || "",
+        progress: Number(task.progress || 0),
       };
 
       const res = await api.post("/api/tasks", payload);

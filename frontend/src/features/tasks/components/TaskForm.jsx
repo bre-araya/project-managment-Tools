@@ -14,6 +14,7 @@ function TaskForm({
     description: "",
     assignee: "",
     dueDate: "",
+    progress: "",
     priority: "Medium",
     status: "todo",
     project: projectId || "",
@@ -49,9 +50,21 @@ function TaskForm({
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    const statusMap = {
+      todo: "To Do",
+      progress: "In Progress",
+      review: "Review",
+      done: "Done",
+    };
+
     onSubmit({
       id: Date.now(),
       ...form,
+      assignees: form.assignee ? [form.assignee] : [],
+      dueDate: form.dueDate || "",
+      progress: Number(form.progress || 0),
+      status: statusMap[form.status] || "To Do",
+      priority: form.priority?.toLowerCase() || "medium",
     });
 
     onClose();
@@ -100,6 +113,18 @@ function TaskForm({
         type="date"
         name="dueDate"
         onChange={handleChange}
+        value={form.dueDate}
+      />
+
+      <input
+        type="number"
+        name="progress"
+        min="0"
+        max="100"
+        step="1"
+        placeholder="Progress %"
+        onChange={handleChange}
+        value={form.progress}
       />
 
       <select

@@ -3,16 +3,19 @@ import ProgressBar from "./ProgressBar";
 import "../../styles/components/project-card.css";
 
 function ProjectCard({ project }) {
+  const progress = Math.max(0, Math.min(100, Number(project.progress || 0)));
+  const deadline = project.deadline ? new Date(project.deadline).toLocaleDateString() : "No deadline";
+
   return (
     <div className="project-card">
       <div className="project-header">
         <h3>{project.name}</h3>
-        <span>{project.progress}%</span>
+        <span>{progress}%</span>
       </div>
 
-      <p>Deadline: {project.deadline}</p>
+      <p>Deadline: {deadline}</p>
 
-      <ProgressBar value={project.progress} />
+      <ProgressBar value={progress} />
     </div>
   );
 }

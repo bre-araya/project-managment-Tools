@@ -2,10 +2,33 @@ const Task = require("../models/task.model");
 const Project = require("../models/project.model");
 const asyncHandler = require("../utils/asyncHandler");
 
+const getProgressFromStatus = (statusValue) => {
+  const normalized = (statusValue || "To Do").toString().trim().toLowerCase();
+
+  if (normalized === "done" || normalized === "completed") return 100;
+  if (normalized === "review") return 75;
+  if (normalized === "in progress" || normalized === "progress") return 50;
+  return 0;
+};
+
+const refreshProjectProgress = async (projectId) => {
+  const project = await Project.findById(projectId);
+  if (!project) return null;
+
+  const tasks = await Task.find({ project: projectId });
+  const averageProgress = tasks.length
+    ? Math.round(tasks.reduce((sum, task) => sum + (task.progress ?? getProgressFromStatus(task.status)), 0) / tasks.length)
+    : Number(project.progress || 0);
+
+  project.progress = averageProgress;
+  await project.save();
+  return project;
+};
+
 // @desc    Create a task card inside a project column
 // @route   POST /api/tasks
 exports.createTask = asyncHandler(async (req, res, next) => {
-  const { project: projectId, title, description, status, priority, assignees } = req.body;
+  const { project: projectId, title, description, status, priority, assignees, dueDate, progress } = req.body;
 
   const project = await Project.findById(projectId);
   if (!project) {
@@ -25,8 +48,12 @@ exports.createTask = asyncHandler(async (req, res, next) => {
     description,
     status: status || "To Do",
     priority: priority || "medium",
-    assignees: Array.isArray(assignees) ? assignees : (assignees ? [assignees] : [])
+    assignees: Array.isArray(assignees) ? assignees : (assignees ? [assignees] : []),
+    dueDate: dueDate || null,
+    progress: progress !== undefined ? Number(progress) : getProgressFromStatus(status || "To Do"),
   });
+
+  await refreshProjectProgress(projectId);
 
   res.status(201).json(task);
 });
@@ -73,10 +100,17 @@ exports.updateTask = asyncHandler(async (req, res, next) => {
     return res.status(403).json({ message: "Not authorized to update this task" });
   }
 
-  task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+  const updatePayload = { ...req.body };
+  if (updatePayload.progress === undefined && updatePayload.status !== undefined) {
+    updatePayload.progress = getProgressFromStatus(updatePayload.status);
+  }
+
+  task = await Task.findByIdAndUpdate(req.params.id, updatePayload, {
     new: true,
     runValidators: true,
   }).populate("assignees", "name email avatar");
+
+  await refreshProjectProgress(task.project);
 
   res.json(task);
 });

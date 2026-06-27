@@ -16,11 +16,6 @@ function Sidebar() {
       name: "Tasks",
       path: "/tasks",
     },
-    {
-      name: "Teams",
-      path: "/teams",
-    },
-
   ];
   const [collapsed, setCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);

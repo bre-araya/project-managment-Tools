@@ -44,6 +44,16 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: "To Do",
       trim: true,
+    },
+    deadline: {
+      type: Date,
+      default: null,
+    },
+    progress: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
     }
   },
   {

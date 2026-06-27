@@ -40,6 +40,12 @@ const taskSchema = new mongoose.Schema(
     dueDate: {
       type: Date,
     },
+    progress: {
+      type: Number,
+      default: 0,
+      min: 0,
+      max: 100,
+    },
     // References a sub-collection for performance optimization
     comments: [
       {

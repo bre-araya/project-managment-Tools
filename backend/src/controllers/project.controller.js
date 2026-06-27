@@ -5,7 +5,7 @@ const asyncHandler = require("../utils/asyncHandler");
 // @desc    Create a new project board
 // @route   POST /api/projects
 exports.createProject = asyncHandler(async (req, res, next) => {
-  const { name, description, status, assignee } = req.body;
+  const { name, description, status, assignee, deadline, progress } = req.body;
 
   if (!name) {
     return res.status(400).json({ message: "Project name is required" });
@@ -28,6 +28,8 @@ exports.createProject = asyncHandler(async (req, res, next) => {
     name,
     description,
     status: status || undefined,
+    deadline: deadline || null,
+    progress: progress !== undefined ? Number(progress) : 0,
     owner: req.user._id,
     members,
   });
@@ -108,7 +110,7 @@ exports.getProject = asyncHandler(async (req, res, next) => {
 // @desc    Update a project
 // @route   PUT /api/projects/:id
 exports.updateProject = asyncHandler(async (req, res, next) => {
-  const { name, description, columns, status } = req.body;
+  const { name, description, columns, status, deadline, progress } = req.body;
   const project = await Project.findById(req.params.id);
 
   if (!project) {
@@ -125,6 +127,8 @@ exports.updateProject = asyncHandler(async (req, res, next) => {
   if (description !== undefined) project.description = description;
   if (columns !== undefined && Array.isArray(columns)) project.columns = columns;
   if (status !== undefined) project.status = status;
+  if (deadline !== undefined) project.deadline = deadline || null;
+  if (progress !== undefined) project.progress = Number(progress);
 
   await project.save();
   res.json(project);

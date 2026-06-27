@@ -27,9 +27,21 @@ function TaskCard({
         >
           <h4>{task?.title || "Untitled task"}</h4>
 
-          <span className={`priority ${priority}`}>
-            {task?.priority || "Medium"}
-          </span>
+          <div className="task-progress-row">
+            <span>{Math.round(task?.progress || 0)}%</span>
+            <div className="task-progress-bar">
+              <div style={{ width: `${Math.max(0, Math.min(100, Number(task?.progress || 0)))}%` }} />
+            </div>
+          </div>
+
+          <div className="task-meta-row">
+            <span className={`priority ${priority}`}>
+              {task?.priority || "Medium"}
+            </span>
+            <span className="task-due-date">
+              {task?.dueDate ? `Due ${new Date(task.dueDate).toLocaleDateString()}` : "No deadline"}
+            </span>
+          </div>
         </div>
       )}
     </Draggable>

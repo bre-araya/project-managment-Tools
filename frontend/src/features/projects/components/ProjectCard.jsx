@@ -68,6 +68,21 @@ function ProjectCard({ project, index }) {
 
           {project.description ? <p className="project-desc">{project.description}</p> : null}
 
+          <div className="project-progress-block">
+            <div className="project-progress-meta">
+              <span>Progress</span>
+              <strong>{Math.round(project.progress || 0)}%</strong>
+            </div>
+            <div className="project-progress-bar">
+              <div style={{ width: `${Math.max(0, Math.min(100, Number(project.progress || 0)))}%` }} />
+            </div>
+          </div>
+
+          <div className="project-deadline-block">
+            <span>Deadline</span>
+            <strong>{project.deadline ? new Date(project.deadline).toLocaleDateString() : "No deadline"}</strong>
+          </div>
+
           <div className="meta">
             <div className="owner">
               {project.owner && project.owner.avatar ? (

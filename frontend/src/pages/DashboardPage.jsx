@@ -42,13 +42,17 @@ function DashboardPage() {
               const totalCount = tasks.length;
               const progress = totalCount > 0 ? Math.round((doneCount / totalCount) * 100) : 0;
 
+              const storedProgress = Number.isFinite(Number(project.progress)) ? Number(project.progress) : progress;
+
               return {
                 ...project,
                 taskCount: totalCount,
                 completedCount: doneCount,
                 pendingCount: totalCount - doneCount,
-                progress,
-                deadline: project.updatedAt
+                progress: storedProgress,
+                deadline: project.deadline
+                  ? new Date(project.deadline).toLocaleDateString()
+                  : project.updatedAt
                   ? new Date(project.updatedAt).toLocaleDateString()
                   : "No deadline",
               };
@@ -60,7 +64,9 @@ function DashboardPage() {
                 completedCount: 0,
                 pendingCount: 0,
                 progress: 0,
-                deadline: project.updatedAt
+                deadline: project.deadline
+                  ? new Date(project.deadline).toLocaleDateString()
+                  : project.updatedAt
                   ? new Date(project.updatedAt).toLocaleDateString()
                   : "No deadline",
               };

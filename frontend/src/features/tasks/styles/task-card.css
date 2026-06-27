@@ -19,6 +19,41 @@
   color: #0f172a;
 }
 
+.task-progress-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: #334155;
+  font-size: 13px;
+}
+
+.task-progress-bar {
+  flex: 1;
+  height: 8px;
+  background: #e2e8f0;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.task-progress-bar > div {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #3b82f6);
+  border-radius: inherit;
+}
+
+.task-meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.task-due-date {
+  font-size: 12px;
+  color: #64748b;
+}
+
 .priority {
   font-size: 12px;
   padding: 6px 10px;

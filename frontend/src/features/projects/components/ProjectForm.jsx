@@ -4,12 +4,14 @@ import "./../styles/project-form.css";
 
 function ProjectForm({ onSubmit, loading, initial = {} }) {
   const [users, setUsers] = useState([]);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState(() => ({
     name: initial?.name || "",
     description: initial?.description || "",
     status: initial?.status || "To Do",
     assignee: initial?.assignee || "",
-  });
+    deadline: initial?.deadline || initial?.dueDate || "",
+    progress: initial?.progress ?? "",
+  }));
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -34,7 +36,11 @@ function ProjectForm({ onSubmit, loading, initial = {} }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(form);
+    onSubmit({
+      ...form,
+      progress: Number(form.progress || 0),
+      deadline: form.deadline || "",
+    });
   };
 
   return (
@@ -64,12 +70,18 @@ function ProjectForm({ onSubmit, loading, initial = {} }) {
       </select>
 
       <label>Initial Status</label>
-      <select name="status" onChange={handleChange} defaultValue="To Do">
+      <select name="status" onChange={handleChange} value={form.status}>
         <option>To Do</option>
         <option>In Progress</option>
         <option>Review</option>
         <option>Done</option>
       </select>
+
+      <label>Deadline</label>
+      <input type="date" name="deadline" onChange={handleChange} value={form.deadline || ""} />
+
+      <label>Progress (%)</label>
+      <input type="number" name="progress" min="0" max="100" step="1" onChange={handleChange} value={form.progress} />
 
       <button disabled={loading}>
         {loading ? "Saving..." : (initial && initial.name ? "Save Changes" : "Create Project")}
