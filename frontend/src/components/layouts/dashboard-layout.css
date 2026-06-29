@@ -7,7 +7,7 @@
 
 .sidebar {
   width: 240px;
-  background: var(--white-color);
+  background: #074493;
   border-right: 1px solid var(--border-color);
   padding: 24px;
   position: sticky;
@@ -25,7 +25,7 @@
 .logo {
   font-size: 24px;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #ffffff;
   margin-bottom: 40px;
 }
 
@@ -92,8 +92,8 @@
   padding: 14px 16px;
   border-radius: var(--border-radius);
   transition: var(--transition);
-  color: #4b5563;
-  font-weight: 500;
+  color: #ffffff;
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 12px;
