@@ -2,7 +2,7 @@ import TaskCard from "./TaskCard";
 
 import "../styles/task-column.css";
 
-function TaskColumn({ title, tasks, provided, snapshot }) {
+function TaskColumn({ title, tasks, provided, snapshot, onTaskClick }) {
   return (
     <div
       className={`task-column ${snapshot.isDraggingOver ? "dragging-over" : ""}`}
@@ -19,7 +19,7 @@ function TaskColumn({ title, tasks, provided, snapshot }) {
       <div className="column-tasks">
         {tasks.map((task, index) => {
           const taskId = task?._id || task?.id || `task-${title}-${index}`;
-          return <TaskCard key={taskId} task={task} index={index} />;
+          return <TaskCard key={taskId} task={task} index={index} onClick={() => onTaskClick && onTaskClick(task)} />;
         })}
       </div>
 

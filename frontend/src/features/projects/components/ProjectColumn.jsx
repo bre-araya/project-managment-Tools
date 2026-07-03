@@ -15,7 +15,11 @@ function ProjectColumn({ title, projects, provided, snapshot }) {
 
       <div className="column-items">
         {projects.map((project, index) => (
-          <ProjectCard key={project._id || project.id} project={project} index={index} />
+          <ProjectCard
+            key={project._id || project.id}
+            project={project}
+            index={index}
+          />
         ))}
       </div>
 

@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import "../styles/projects.css";
 
 //import ProjectCard from "../components/ProjectCard";
+import ProjectDetailsModal from "../components/ProjectDetailsModal";
 import ProjectModal from "../components/ProjectModal";
 import ProjectsKanban from "../components/ProjectsKanban";
 import * as projectApi from "../../../services/projectService";
@@ -12,6 +13,7 @@ function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState(null);
+  const [detailProject, setDetailProject] = useState(null);
   const openModal = searchParams.get("modal") === "new";
 
   useEffect(() => {
@@ -68,6 +70,23 @@ function ProjectsPage() {
     setSearchParams(nextParams, { replace: true });
   };
 
+  const handleViewDetails = async (project) => {
+    try {
+      const fullProject = await projectApi.getProject(project._id || project.id);
+      setDetailProject(fullProject);
+    } catch (err) {
+      console.error("Failed to load full project details", err);
+      setDetailProject(project);
+    }
+  };
+
+  const handleInviteMember = async (projectId, payload) => {
+    await projectApi.inviteMember(projectId, payload);
+    const project = await projectApi.getProject(projectId);
+    setProjects((prev) => prev.map((p) => ((p._id || p.id) === projectId ? project : p)));
+    setDetailProject(project);
+  };
+
   const handleDelete = async (project) => {
     if (!confirm(`Delete project "${project.name}"? This cannot be undone.`)) return;
     try {
@@ -116,7 +135,16 @@ function ProjectsPage() {
           onMove={handleMove}
           onEdit={handleEdit}
           onDelete={handleDelete}
+          onViewDetails={handleViewDetails}
           onInlineUpdate={handleInlineUpdate}
+        />
+      )}
+
+      {detailProject && (
+        <ProjectDetailsModal
+          project={detailProject}
+          onClose={() => setDetailProject(null)}
+          onInviteMember={handleInviteMember}
         />
       )}
 

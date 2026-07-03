@@ -2,7 +2,7 @@ import { Droppable } from "@hello-pangea/dnd";
 
 import TaskColumn from "./TaskColumn";
 
-function KanbanBoard({ tasks }) {
+function KanbanBoard({ tasks, onTaskClick }) {
   return (
     <div className="kanban-board">
       <Droppable droppableId="todo">
@@ -12,6 +12,7 @@ function KanbanBoard({ tasks }) {
             tasks={tasks.todo}
             provided={provided}
             snapshot={snapshot}
+            onTaskClick={onTaskClick}
           />
         )}
       </Droppable>
@@ -23,6 +24,7 @@ function KanbanBoard({ tasks }) {
             tasks={tasks.progress}
             provided={provided}
             snapshot={snapshot}
+            onTaskClick={onTaskClick}
           />
         )}
       </Droppable>
@@ -34,6 +36,7 @@ function KanbanBoard({ tasks }) {
             tasks={tasks.review}
             provided={provided}
             snapshot={snapshot}
+            onTaskClick={onTaskClick}
           />
         )}
       </Droppable>
@@ -45,6 +48,7 @@ function KanbanBoard({ tasks }) {
             tasks={tasks.done}
             provided={provided}
             snapshot={snapshot}
+            onTaskClick={onTaskClick}
           />
         )}
       </Droppable>

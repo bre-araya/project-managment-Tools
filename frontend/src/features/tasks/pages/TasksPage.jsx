@@ -4,6 +4,7 @@ import { DragDropContext } from "@hello-pangea/dnd";
 
 import KanbanBoard from "../components/KanbanBoard";
 import TaskModal from "../components/TaskModal";
+import TaskDetails from "../components/TaskDetails";
 import api from "../../../services/api";
 
 import "../styles/tasks.css";
@@ -12,6 +13,7 @@ function TasksPage() {
   const { projectId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [tasks, setTasks] = useState({ todo: [], progress: [], review: [], done: [] });
+  const [selectedTask, setSelectedTask] = useState(null);
   const openModal = searchParams.get("modal") === "new";
 
   const normalizeTask = (task) => {
@@ -205,8 +207,27 @@ function TasksPage() {
       <DragDropContext
         onDragEnd={handleDragEnd}
       >
-        <KanbanBoard tasks={tasks} />
+        <KanbanBoard tasks={tasks} onTaskClick={setSelectedTask} />
       </DragDropContext>
+
+      {selectedTask && (
+        <TaskDetails
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          onSave={async (taskId, payload) => {
+            const res = await api.put(`/api/tasks/${taskId}`, payload);
+            const updatedTask = normalizeTask(res.data);
+            setTasks((prev) => {
+              const newTasks = { todo: [...prev.todo], progress: [...prev.progress], review: [...prev.review], done: [...prev.done] };
+              Object.keys(newTasks).forEach((key) => {
+                newTasks[key] = newTasks[key].map((item) => (item._id === taskId || item.id === taskId ? updatedTask : item));
+              });
+              return newTasks;
+            });
+            setSelectedTask(updatedTask);
+          }}
+        />
+      )}
 
       {/* MODAL */}
       {openModal && (

@@ -60,6 +60,7 @@ function ProjectCard({ project, index }) {
             </div>
 
             <div className="project-actions">
+              <button className="action-btn details" title="Details" onClick={(e) => { e.stopPropagation(); project.__onViewDetails && project.__onViewDetails(project); }}>ℹ️</button>
               <button className="action-btn tasks" title="View Tasks" onClick={handleViewTasks}>📋</button>
               <button className="action-btn edit" title="Edit" onClick={(e) => { e.stopPropagation(); project.__onEdit && project.__onEdit(project); }}>✎</button>
               <button className="action-btn delete" title="Delete" onClick={(e) => { e.stopPropagation(); project.__onDelete && project.__onDelete(project); }}>🗑</button>

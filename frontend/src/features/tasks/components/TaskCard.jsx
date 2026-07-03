@@ -5,6 +5,7 @@ import "../styles/task-card.css";
 function TaskCard({
   task,
   index,
+  onClick,
 }) {
   const taskId = task?._id || task?.id || `task-${index}`;
   const priority = String(task?.priority || "Medium").toLowerCase();
@@ -24,6 +25,15 @@ function TaskCard({
           ref={provided.innerRef}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
+          onClick={() => onClick && onClick(task)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault();
+              onClick && onClick(task);
+            }
+          }}
         >
           <h4>{task?.title || "Untitled task"}</h4>
 
