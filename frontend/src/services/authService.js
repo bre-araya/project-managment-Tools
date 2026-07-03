@@ -17,3 +17,9 @@ export const logout = async () => {
   localStorage.removeItem("pm_user");
   return res.data;
 };
+
+export default {
+  register,
+  login,
+  logout,
+};
